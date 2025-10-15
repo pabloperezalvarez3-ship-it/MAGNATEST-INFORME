@@ -149,32 +149,36 @@ header, .header, .page-header { position: relative; }
 
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
-<style id="mgt-fixes-v2">
-:root{ --mgt-page-margin: 10mm; --mgt-logo-size: 28mm; }
+<style id="mgt-fixes-v4">
+:root{
+  --mgt-page-margin: 10mm;     /* margen de la página al imprimir */
+  --mgt-logo-size: 26mm;       /* tamaño del logo */
+  --mgt-logo-nudge-y: -4mm;    /* ajuste fino vertical (negativo = subir) */
+  --mgt-title-offset: 6mm;     /* espacio extra bajo el logo para despejar título */
+}
 .mgt-print-spacer{ display:none; }
 @media print {
-  @page { size:A4; margin: var(--mgt-page-margin); }
-  /* Ocultar toolbars/controles si existen */
+  @page { size: A4; margin: var(--mgt-page-margin); }
   .toolbar, .no-print, .controls { display:none !important; }
-  /* Poner el logo como pseudo-elemento fijo en la esquina superior izquierda */
+  /* Logo fijo: esquina superior izquierda con ajuste fino */
   body::before{
     content:"";
     position: fixed;
-    top: var(--mgt-page-margin);
+    top: calc(var(--mgt-page-margin) + var(--mgt-logo-nudge-y));
     left: var(--mgt-page-margin);
     width: var(--mgt-logo-size);
     height: var(--mgt-logo-size);
     background: url('icons/logo-magnatest.png') no-repeat left top / contain;
     z-index: 9999;
   }
-  /* Reservar espacio para que el título no se superponga */
+  /* Reserva de espacio para que el título no invada el logo */
   .mgt-print-spacer{
     display:block !important;
-    height: calc(var(--mgt-logo-size) + 6mm) !important;
+    height: calc(var(--mgt-logo-size) + var(--mgt-title-offset)) !important;
   }
-  /* Evitar sombras/bordes y paddings que muevan la maquetación al imprimir */
-  .sheet, .page, main, #app, .container { box-shadow:none !important; border:none !important; }
-  /* Si el documento tiene otro logo en cabecera, ocultarlo solo en impresión para no duplicar */
+  /* Quitar sombras/bordes y rellenos que puedan mover layout en impresión */
+  #app, main, .sheet, .page, .container{ box-shadow:none !important; border:none !important; }
+  /* Evitar logo duplicado */
   header img[src*="logo" i], header img[alt*="magnatest" i], .header img { visibility: hidden !important; }
 }
 </style>
