@@ -149,43 +149,37 @@ header, .header, .page-header { position: relative; }
 
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
-<style id="mgt-fixes-v4">
+<style id="mgt-fixes-v5">
 :root{
-  --mgt-page-margin: 10mm;     /* margen de la página al imprimir */
-  --mgt-logo-size: 26mm;       /* tamaño del logo */
-  --mgt-logo-nudge-y: -4mm;    /* ajuste fino vertical (negativo = subir) */
-  --mgt-title-offset: 6mm;     /* espacio extra bajo el logo para despejar título */
+  --mgt-page-margin: 10mm;   /* margen imprimible */
+  --mgt-logo-size: 20mm;     /* altura del logo */
+  --mgt-logo-nudge-y: -6mm;  /* ajuste fino vertical (negativo = subir) */
 }
-.mgt-print-spacer{ display:none; }
 @media print {
-  @page { size: A4; margin: var(--mgt-page-margin); }
-  .toolbar, .no-print, .controls { display:none !important; }
-  /* Logo fijo: esquina superior izquierda con ajuste fino */
+  @page { size:A4; margin: var(--mgt-page-margin); }
+  /* Limpieza para que nada empuje hacia abajo */
+  html, body { margin:0 !important; padding:0 !important; background:#fff !important; }
+  header, .header, .sheet, .page, main, #app, .container {
+    margin-top:0 !important; padding-top:0 !important; box-shadow:none !important; border:none !important;
+  }
+  /* Logo fijo arriba-izquierda */
   body::before{
     content:"";
     position: fixed;
     top: calc(var(--mgt-page-margin) + var(--mgt-logo-nudge-y));
     left: var(--mgt-page-margin);
-    width: var(--mgt-logo-size);
+    width: auto;
     height: var(--mgt-logo-size);
     background: url('icons/logo-magnatest.png') no-repeat left top / contain;
     z-index: 9999;
   }
-  /* Reserva de espacio para que el título no invada el logo */
-  .mgt-print-spacer{
-    display:block !important;
-    height: calc(var(--mgt-logo-size) + var(--mgt-title-offset)) !important;
-  }
-  /* Quitar sombras/bordes y rellenos que puedan mover layout en impresión */
-  #app, main, .sheet, .page, .container{ box-shadow:none !important; border:none !important; }
-  /* Evitar logo duplicado */
+  /* Evitar duplicado del logo en cabecera in-flow si existiera */
   header img[src*="logo" i], header img[alt*="magnatest" i], .header img { visibility: hidden !important; }
 }
 </style>
 
 </head>
 <body>
-<div class="mgt-print-spacer" aria-hidden="true"></div>
   <div class="toolbar">
     <button class="btn" onclick="window.print()">Imprimir / Guardar PDF</button>
     <button class="btn" id="btnAddZonas">+ Zonas</button>
