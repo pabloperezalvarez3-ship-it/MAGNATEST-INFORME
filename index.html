@@ -149,23 +149,39 @@ header, .header, .page-header { position: relative; }
 
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
-<style id="mgt-fixes-final">
-/* === MGT Fixes v1: logo bien esquinado en PDF y limpieza de impresión === */
+<style id="mgt-fixes-v2">
 :root{ --mgt-page-margin: 10mm; --mgt-logo-size: 28mm; }
+.mgt-print-spacer{ display:none; }
 @media print {
-  @page { size: A4; margin: var(--mgt-page-margin); }
-  body{ background:#fff !important; }
-  .toolbar{ display:none !important; }
-  .sheet{ margin:0 !important; padding:0 !important; box-shadow:none !important; border-radius:0 !important; }
-  /* Ancla el logo exactamente en la esquina superior izquierda del área imprimible */
-  .logo-wrap{ position: fixed !important; top: var(--mgt-page-margin) !important; left: var(--mgt-page-margin) !important; z-index: 9999 !important; }
-  .logo-wrap .logo{ height: var(--mgt-logo-size) !important; width: auto !important; display:block !important; }
-  header.header{ margin-top: 0 !important; padding-top: 0 !important; }
+  @page { size:A4; margin: var(--mgt-page-margin); }
+  /* Ocultar toolbars/controles si existen */
+  .toolbar, .no-print, .controls { display:none !important; }
+  /* Poner el logo como pseudo-elemento fijo en la esquina superior izquierda */
+  body::before{
+    content:"";
+    position: fixed;
+    top: var(--mgt-page-margin);
+    left: var(--mgt-page-margin);
+    width: var(--mgt-logo-size);
+    height: var(--mgt-logo-size);
+    background: url('icons/logo-magnatest.png') no-repeat left top / contain;
+    z-index: 9999;
+  }
+  /* Reservar espacio para que el título no se superponga */
+  .mgt-print-spacer{
+    display:block !important;
+    height: calc(var(--mgt-logo-size) + 6mm) !important;
+  }
+  /* Evitar sombras/bordes y paddings que muevan la maquetación al imprimir */
+  .sheet, .page, main, #app, .container { box-shadow:none !important; border:none !important; }
+  /* Si el documento tiene otro logo en cabecera, ocultarlo solo en impresión para no duplicar */
+  header img[src*="logo" i], header img[alt*="magnatest" i], .header img { visibility: hidden !important; }
 }
 </style>
 
 </head>
 <body>
+<div class="mgt-print-spacer" aria-hidden="true"></div>
   <div class="toolbar">
     <button class="btn" onclick="window.print()">Imprimir / Guardar PDF</button>
     <button class="btn" id="btnAddZonas">+ Zonas</button>
@@ -177,7 +193,7 @@ header, .header, .page-header { position: relative; }
   </div>
 
   <div class="sheet" id="sheet">
-    <div class="logo-wrap brand"><img class="logo" src="icons/logo-magnatest.png" alt="MAGNATEST" /></div>
+    <div class="logo-wrap"><img class="logo" src="icons/logo-magnatest.png" alt="MAGNATEST" /></div>
     <header class="header">
       <div class="h-title">INFORME DE INSPECCIÓN</div>
       <div class="h-sub">Proyecto / Equipo / Fecha – Complete los campos en las tablas.</div>
@@ -447,7 +463,6 @@ header, .header, .page-header { position: relative; }
 
 
 <script>
-// PWA: registrar service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('sw.js').catch(function(err){ console.warn('SW fail', err); });
