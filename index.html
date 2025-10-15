@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Informe de Inspección</title>
+  <meta name="theme-color" content="#0b66c3" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <style>
+    :root{--a4-w:210mm;--a4-h:297mm;--ink:#111827;--border:#e5e7eb;--bg:#ffffff;--head:#204aa0;--soft:#cfe2ff}
+    html,body{height:100%}
+    body{margin:0;background:#0f172a;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .toolbar{position:sticky;top:0;z-index:10;max-width:var(--a4-w);margin:0 auto;padding:10px 8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;background:#0f172a}
+    .btn{border:1px solid #334155;background:#1f2937;color:#e5e7eb;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+    input[type="file"]{display:none!important}
+
+    .sheet{counter-reset:sec;width:var(--a4-w);min-height:var(--a4-h);margin:12px auto 24px;background:var(--bg);box-shadow:0 10px 30px rgba(0,0,0,.35);border-radius:10px;padding:18mm 16mm;box-sizing:border-box;position:relative}
+    .logo-wrap{position:absolute;top:6mm;left:10mm}
+    .logo{width:34mm}
+    #sec-antecedentes{margin-top:14mm}
+
+    .header{text-align:center;margin:0 auto 10mm}
+    .h-title{font-size:22px;font-weight:800;letter-spacing:.3px;text-transform:uppercase}
+    .h-sub{color:#6b7280;font-size:12px}
+
+    .section{margin-bottom:9mm;break-inside:avoid;counter-increment:sec}
+    .section h2{display:flex;align-items:center;gap:10px;font-size:18px;margin:0 0 6mm 0;break-after:avoid}
+    .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;background:#e6efff;color:#113c88;font-weight:800}
+    .num::after{content:counter(sec)}
+
+    .table-wrap{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+    thead th{background:var(--head);color:#fff;text-align:left;padding:10px 8px;font-weight:700}
+    tbody td{border-top:1px solid var(--border);border-right:1px solid var(--border);padding:9px 8px;vertical-align:top;background:#fff}
+    tbody td:last-child{border-right:none}
+    [contenteditable="true"]{outline:none}
+    [contenteditable="true"]:focus{box-shadow:inset 0 0 0 2px #d6e7fb;background:#f8fbff}
+
+    /* Centro de texto SOLO sección resultados */
+    #tabla-resultados tbody td{ text-align:center; }
+    #tabla-resultados tbody td:first-child{ text-align:center; } /* si prefieres izq, cambia a left */
+
+    /* Anexo: título formal y galería 2 columnas con borde tenue */
+    .group{margin:8mm 0 10mm}
+    .group-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+    .group-name{display:inline-block;padding:8px 12px;border:1px solid var(--border);border-radius:12px;background:#eef5ff;color:#0f3e79;font-weight:700;min-width:46mm;max-width:100mm}
+    .gallery{--cols:2;--gap:10px;display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:var(--gap)}
+    .photo{position:relative;border:2px solid var(--soft);border-radius:12px;overflow:hidden;background:#fff;break-inside:avoid;page-break-inside:avoid;cursor:grab;box-shadow:0 0 0 4px #f6f9ff inset}
+    .photo:active{cursor:grabbing}
+    .photo::before{content:"";display:block;aspect-ratio:4/3;}
+    .photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .drag-over{outline:3px dashed #2563eb; outline-offset:-6px}
+
+    /* Firma */
+    .sig-table { width: 70%; margin: 12mm auto 0; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .sig-table table { width:100%; border-collapse:collapse; table-layout:fixed; }
+    .sig-table td { border-top:1px solid var(--border); padding:10px; font-size:13px; vertical-align:middle; }
+    .sig-table tr:first-child td { border-top:none; }
+    .sig-label { width:38%; background:#eef5ff; font-weight:700; color:#0f3e79; }
+    .sig-fill { background:#fff; }
+    .sig-underline { border-bottom:1.5px solid #9ec3ff; height:24px; }
+
+    /* Observaciones simple */
+    .notes-simple{border:1px solid var(--border);border-radius:12px;min-height:35mm;padding:10px;background:#fff}
+
+    @page{size:A4;margin:12mm 10mm}
+    @media print{
+      .toolbar,.controls{display:none!important}
+      body{background:#fff}
+      .sheet{margin:0;box-shadow:none;border-radius:0;padding:0}
+      #sec-fotos .group + .group{break-before:page}
+      .photo{border:2px solid var(--soft);box-shadow:0 0 0 4px #f6f9ff inset} /* mantener borde tenue también en PDF */
+    }
+  
+/* === Precise logo placement for PRINT === */
+:root{
+  --pm-top: 8mm;
+  --pm-left: 10mm;
+  --logo-nudge-x: -2mm;
+  --logo-nudge-y: -2mm;
+}
+@media print {
+  @page {
+    margin: var(--pm-top) 10mm 12mm var(--pm-left);
+  }
+  .report-header, header, .title-wrap { padding-top: 0 !important; margin-top: 0 !important; }
+  .brand{position:absolute !important; top:14px !important; left:20px !important; z-index:1000;}
+  .brand img{ display:block !important; max-height: 28mm !important; height:auto !important; width:auto !important; }
+}
+
+</style>
+
+<!-- mgt v35 css -->
+<style>
+/* Header/brand forced top-left */
+header, .header, .page-header { position: relative; }
+.brand, .app-brand, .brand-logo, .logo, .mgt-brand { position: absolute !important; top: 4px !important; left: 18px !important; z-index: 10; }
+.brand img, .app-brand img, .brand-logo img, .logo img, .mgt-brand img { height: 60px !important; width: auto !important; display:block; }
+
+
+@media print {
+  .sig-table{ page-break-before: always; break-inside: avoid; margin-top: 8mm; }
+}
+
+
+/* === Logo bien esquinado en pantalla e impresión === */
+:root{ --page-margin: 10mm; --logo-nudge-y: -1mm; --logo-nudge-x: -1mm; }
+@media print {
+  @page { margin: var(--page-margin); }
+  .report-header, header, .title-wrap{ padding-top:0 !important; margin-top:0 !important; }
+  .brand{position:absolute !important; top:14px !important; left:20px !important; z-index:1000;}
+}
+
+/* Center report title block */
+.report-title, h1.report-title, .title-main { text-align: center; margin: 0; padding-top: 6px; }
+
+/* Photo tiles: add light border + delete button */
+.mgt-photo, .mgt-photo-card, .photo, .photo-card, .gallery-item, .evidence-photo, .evidence .item, figure.photo {
+  position: relative; border-radius: 14px; overflow: hidden; outline: 1.5px solid rgba(60,110,200,.25);
+}
+.mgt-remove { position:absolute; top:8px; right:8px; border:1px solid #cfe0ff; background:#fff; color:#1f3a93;
+  font-size: .8rem; line-height:1; padding:4px 8px; border-radius:10px; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+.mgt-remove:hover{ background:#eef3ff; }
+
+@media print{
+  .mgt-remove{ display:none !important; }
+  .brand, .app-brand, .brand-logo, .logo, .mgt-brand { top: 0 !important; left: 0 !important; }
+  .report-title, h1.report-title, .title-main { padding-top: 0; }
+}
+
+/* === Precise logo placement for PRINT === */
+:root{
+  --pm-top: 8mm;
+  --pm-left: 10mm;
+  --logo-nudge-x: -2mm;
+  --logo-nudge-y: -2mm;
+}
+@media print {
+  @page {
+    margin: var(--pm-top) 10mm 12mm var(--pm-left);
+  }
+  .report-header, header, .title-wrap { padding-top: 0 !important; margin-top: 0 !important; }
+  .brand{position:absolute !important; top:14px !important; left:20px !important; z-index:1000;}
+  .brand img{ display:block !important; max-height: 28mm !important; height:auto !important; width:auto !important; }
+}
+
+</style>
+
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+
+<style id="mgt-fixes-final">
+/* === MGT Fixes v1: logo bien esquinado en PDF y limpieza de impresión === */
+:root{ --mgt-page-margin: 10mm; --mgt-logo-size: 28mm; }
+@media print {
+  @page { size: A4; margin: var(--mgt-page-margin); }
+  body{ background:#fff !important; }
+  .toolbar{ display:none !important; }
+  .sheet{ margin:0 !important; padding:0 !important; box-shadow:none !important; border-radius:0 !important; }
+  /* Ancla el logo exactamente en la esquina superior izquierda del área imprimible */
+  .logo-wrap{ position: fixed !important; top: var(--mgt-page-margin) !important; left: var(--mgt-page-margin) !important; z-index: 9999 !important; }
+  .logo-wrap .logo{ height: var(--mgt-logo-size) !important; width: auto !important; display:block !important; }
+  header.header{ margin-top: 0 !important; padding-top: 0 !important; }
+}
+</style>
+
+</head>
+<body>
+  <div class="toolbar">
+    <button class="btn" onclick="window.print()">Imprimir / Guardar PDF</button>
+    <button class="btn" id="btnAddZonas">+ Zonas</button>
+    <button class="btn" id="btnAddResultados">+ Resultados</button>
+    <button class="btn" id="btnAddFotos">+ Fotos</button>
+    <button class="btn" id="btnSave">Guardar</button>
+    <button class="btn" id="btnLoad">Cargar</button>
+    <input type="file" id="fileLoader" accept="application/json" />
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="logo-wrap brand"><img class="logo" src="icons/logo-magnatest.png" alt="MAGNATEST" /></div>
+    <header class="header">
+      <div class="h-title">INFORME DE INSPECCIÓN</div>
+      <div class="h-sub">Proyecto / Equipo / Fecha – Complete los campos en las tablas.</div>
+    </header>
+
+    <!-- 1 -->
+    <section class="section" id="sec-antecedentes">
+      <h2><span class="num"></span> Antecedentes</h2>
+      <div class="table-wrap">
+        <table><tbody>
+          <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Orden de Trabajo</td><td contenteditable="true">505902857/01</td></tr>
+          <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Cliente</td><td contenteditable="true">INTERCAMBIO O INTERNO CRC</td></tr>
+          <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Modelo del Equipo</td><td contenteditable="true">79S3</td></tr>
+          <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Nombre Componente</td><td contenteditable="true">CONVERTIDOR TORQUE</td></tr>
+          <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Proyecto / Obra</td><td contenteditable="true">Contrato X - Planta Y</td></tr>
+          <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Ubicación</td><td contenteditable="true">Faena / Ciudad / Coordenadas</td></tr>
+          <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Norma aplicable</td><td contenteditable="true">ISO 5817</td></tr>
+          <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Método (END)</td><td contenteditable="true">MT – Partículas Magnéticas</td></tr>
+          <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Tipo de componente</td><td contenteditable="true">Soldadura</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="section" id="sec-tecnica">
+      <h2><span class="num"></span> Técnica de Inspección (MT)</h2>
+      <div class="table-wrap"><table><tbody>
+        <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Técnica</td><td contenteditable="true">Residual</td></tr>
+        <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Imantación</td><td contenteditable="true">Longitudinal</td></tr>
+        <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Partículas magnéticas</td><td contenteditable="true">Fluorescentes</td></tr>
+        <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Equipo</td><td contenteditable="true">Estacionario</td></tr>
+        <tr><td style="width:35%;background:#eef5ff;font-weight:700;color:#0f3e79;">Corriente</td><td contenteditable="true">1500 A</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <!-- 3 -->
+    <section class="section" id="sec-zonas">
+      <h2><span class="num"></span> Zonas inspeccionadas</h2>
+      <div class="table-wrap"><table id="tabla-zonas">
+        <thead><tr><th>Componente</th><th>Descripción</th></tr></thead>
+        <tbody><tr><td contenteditable="true">Z1</td><td contenteditable="true">Carcaza</td></tr></tbody>
+      </table></div>
+    </section>
+
+    <!-- 4 -->
+    <section class="section" id="sec-resultados">
+      <h2><span class="num"></span> Resultados obtenidos</h2>
+      <div class="table-wrap"><table id="tabla-resultados">
+        <thead><tr>
+          <th>Pieza/Zona</th><th>Sin defecto</th><th>Tipo de Defecto</th>
+          <th>Cantidad</th><th>Ubicación / Tamaño</th><th>Condición Final</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td contenteditable="true">Z1</td><td contenteditable="true">-</td>
+            <td contenteditable="true">FISURA</td><td contenteditable="true">1</td>
+            <td contenteditable="true">VER ANEXO</td><td contenteditable="true">RECHAZA</td>
+          </tr>
+        </tbody></table></div>
+    </section>
+
+    <!-- 5 -->
+    <section class="section" id="sec-observaciones">
+      <h2><span class="num"></span> Observaciones</h2>
+      <div class="notes-simple" contenteditable="true">Anote aquí detalles generales, recomendaciones y acciones.</div>
+    </section>
+
+    <!-- 6 -->
+    <section class="section" id="sec-fotos">
+      <h2><span class="num"></span> Anexo Fotográfico</h2>
+      <div id="foto-groups"></div>
+    </section>
+
+    <!-- Firma final -->
+    <div class="sig-table">
+      <table>
+        <tr><td class="sig-label">Nombre / Cargo</td><td class="sig-fill"><div contenteditable="true" class="sig-underline">Nombre completo — Cargo</div></td></tr>
+        <tr><td class="sig-label">Fecha</td><td class="sig-fill"><div contenteditable="true" class="sig-underline">dd/mm/aaaa</div></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <template id="tpl-foto-group">
+    <div class="group">
+      <div class="group-head">
+        <div class="group-name" contenteditable="true">Nombre del componente</div>
+        <div class="controls">
+          <button type="button" class="btnPick">Cargar fotos</button>
+          <input class="picker" type="file" accept="image/*" multiple capture="environment" />
+        </div>
+      </div>
+      <div class="gallery" style="--cols:2"></div>
+    </div>
+  </template>
+
+  <script>
+    // Fotos (drag & drop para ordenar)
+    const groupsWrap=document.getElementById('foto-groups');
+    const tplGroup=document.getElementById('tpl-foto-group');
+
+    function enableDnD(card){
+      card.setAttribute('draggable','true');
+      card.addEventListener('dragstart', (e)=>{
+        e.dataTransfer.setData('text/plain','drag');
+        card.classList.add('dragging');
+      });
+      card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
+    }
+    function bindGallery(gallery){
+      let overCard=null;
+      gallery.addEventListener('dragover', (e)=>{
+        e.preventDefault();
+        const dragging = gallery.querySelector('.dragging');
+        const cards = [...gallery.querySelectorAll('.photo:not(.dragging)')];
+        let nearest=null, minDist=1e9;
+        cards.forEach(c=>{
+          const r=c.getBoundingClientRect();
+          const cx=r.left+r.width/2, cy=r.top+r.height/2;
+          const d=(e.clientX-cx)**2 + (e.clientY-cy)**2;
+          if(d<minDist){minDist=d; nearest=c;}
+        });
+        cards.forEach(c=>c.classList.remove('drag-over'));
+        if(nearest){ nearest.classList.add('drag-over'); overCard=nearest; }
+      });
+      gallery.addEventListener('dragleave', ()=>{
+        gallery.querySelectorAll('.drag-over').forEach(c=>c.classList.remove('drag-over'));
+      });
+      gallery.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        const dragging = gallery.querySelector('.dragging');
+        if(!dragging) return;
+        if(overCard){
+          gallery.insertBefore(dragging, overCard);
+          overCard.classList.remove('drag-over');
+          overCard=null;
+        } else {
+          gallery.appendChild(dragging);
+        }
+      });
+    }
+
+    function bindGroup(group){
+      const gallery=group.querySelector('.gallery');
+      bindGallery(gallery);
+      const picker=group.querySelector('.picker');
+      group.querySelector('.btnPick').addEventListener('click',()=>picker.click());
+      const onFiles=(files)=>{
+        Array.from(files).forEach(file=>{
+          const r=new FileReader();
+          r.onload=e=>{
+            const card=document.createElement('div'); card.className='photo';
+            const img=document.createElement('img'); img.alt='foto'; img.src=e.target.result;
+            card.appendChild(img); enableDnD(card); gallery.appendChild(card);
+          };
+          r.readAsDataURL(file);
+        });
+      };
+      picker.addEventListener('change',(ev)=>{ onFiles(ev.target.files); ev.target.value=''; });
+    }
+    function addFotoGroup(){ const g=tplGroup.content.firstElementChild.cloneNode(true); groupsWrap.appendChild(g); bindGroup(g); }
+    addFotoGroup();
+    document.getElementById('btnAddFotos').addEventListener('click', addFotoGroup);
+
+    // +Zonas y +Resultados
+    function addZonaRow(){
+      const tbody=document.querySelector('#tabla-zonas tbody');
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td contenteditable="true"></td><td contenteditable="true"></td>';
+      tbody.appendChild(tr);
+    }
+    function addResultadoRow(){
+      const tbody=document.querySelector('#tabla-resultados tbody');
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>';
+      tbody.appendChild(tr);
+    }
+    document.getElementById('btnAddZonas').addEventListener('click', addZonaRow);
+    document.getElementById('btnAddResultados').addEventListener('click', addResultadoRow);
+
+    // Guardar / Cargar
+    const sheet=document.getElementById('sheet');
+    const btnSave=document.getElementById('btnSave'), btnLoad=document.getElementById('btnLoad'), fileLoader=document.getElementById('fileLoader');
+    function getState(){ return {version:'sections-final-v31', saved_at:new Date().toISOString(), html:sheet.innerHTML}; }
+    function download(name,text){ const blob=new Blob([text],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url); }
+    function saveToFile(){ const s=getState(); const stamp=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19); download('informe_magnatest_'+stamp+'.mgt.json', JSON.stringify(s)); }
+    function restoreState(s){ if(!s||!s.html) return; sheet.innerHTML=s.html;
+      // rebind galleries for drag & drop
+      sheet.querySelectorAll('#sec-fotos .gallery').forEach(bindGallery);
+      sheet.querySelectorAll('#sec-fotos .photo').forEach(enableDnD);
+      // re-enlazar botones
+      document.getElementById('btnAddFotos').addEventListener('click', addFotoGroup);
+      document.getElementById('btnAddZonas').addEventListener('click', addZonaRow);
+      document.getElementById('btnAddResultados').addEventListener('click', addResultadoRow);
+    }
+    btnSave.addEventListener('click',saveToFile);
+    btnLoad.addEventListener('click',()=>fileLoader.click());
+    fileLoader.addEventListener('change',(ev)=>{ const f=ev.target.files[0]; if(!f) return;
+      const r=new FileReader(); r.onload=e=>{ try{ restoreState(JSON.parse(e.target.result)); }catch(err){ alert('Archivo inválido'); } };
+      r.readAsText(f); ev.target.value=''; });
+  </script>
+
+<!-- mgt v35 js -->
+<script>
+(function(){
+  function qualifyPhotoCard(node){
+    if (!node) return null;
+    // base element to decorate is the first ancestor that holds the img
+    var card = node.closest('.mgt-photo, .mgt-photo-card, .photo-card, .photo, .gallery-item, .evidence-photo, .evidence .item, figure');
+    if (!card) card = node.parentElement;
+    if (!card) return null;
+    card.classList.add('mgt-photo-card');
+    if (!card.querySelector('.mgt-remove')){
+      var b = document.createElement('button');
+      b.className = 'mgt-remove'; b.textContent = '🗑';
+      b.title = 'Eliminar';
+      card.appendChild(b);
+    }
+    return card;
+  }
+  function decorateAll(){
+    document.querySelectorAll('img').forEach(function(img){
+      // solo evidencias: ignora el logo y otros iconos
+      var src = img.getAttribute('src')||'';
+      if (/logo|icon|magnatest|mgt/i.test(src)) return;
+      qualifyPhotoCard(img);
+    });
+  }
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.mgt-remove'); if(!btn) return;
+    var card = btn.closest('.mgt-photo-card'); if(!card) return;
+    // intenta identificar sección/ID si existen
+    var section = card.closest('[data-section-id]'); 
+    var img = card.querySelector('img');
+    var src = img ? img.currentSrc || img.src : '';
+    card.remove();
+    try{
+      var st = (window.MGT_STATE = JSON.parse(localStorage.getItem('mgt_state')||'{}'));
+      // Limpieza aproximada: elimina por src
+      if(st.photosBySection){
+        Object.keys(st.photosBySection).forEach(function(k){
+          st.photosBySection[k] = (st.photosBySection[k]||[]).filter(function(p){
+            return (p && p.src) ? p.src !== src : true;
+          });
+        });
+      }
+      localStorage.setItem('mgt_state', JSON.stringify(st));
+    }catch(err){ console.warn('No se pudo sincronizar la eliminación en storage:', err); }
+  });
+  // Bootstrap + observar cambios (cuando se agregan fotos nuevas)
+  document.addEventListener('DOMContentLoaded', function(){
+    decorateAll();
+    var mo = new MutationObserver(function(muts){
+      muts.forEach(function(m){
+        m.addedNodes && m.addedNodes.forEach(function(n){
+          if (n.nodeType === 1){
+            if (n.matches('img')) qualifyPhotoCard(n);
+            n.querySelectorAll && n.querySelectorAll('img').forEach(qualifyPhotoCard);
+          }
+        });
+      });
+    });
+    mo.observe(document.body, {childList:true, subtree:true});
+    window.mgtRefreshPhotoButtons = decorateAll;
+  });
+})();
+</script>
+
+
+<script>
+// PWA: registrar service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function(err){ console.warn('SW fail', err); });
+  });
+}
+</script>
+</body>
+</html>
