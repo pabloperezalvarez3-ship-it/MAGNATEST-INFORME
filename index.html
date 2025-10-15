@@ -149,20 +149,21 @@ header, .header, .page-header { position: relative; }
 
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
-<style id="mgt-fixes-v5">
+
+
+
+<style id="mgt-fixes-v6">
 :root{
   --mgt-page-margin: 10mm;   /* margen imprimible */
-  --mgt-logo-size: 20mm;     /* altura del logo */
-  --mgt-logo-nudge-y: -6mm;  /* ajuste fino vertical (negativo = subir) */
+  --mgt-logo-size: 24mm;     /* altura del logo (ligeramente mayor) */
+  --mgt-logo-nudge-y: -12mm; /* subir 12mm para igualar la segunda imagen */
 }
 @media print {
   @page { size:A4; margin: var(--mgt-page-margin); }
-  /* Limpieza para que nada empuje hacia abajo */
   html, body { margin:0 !important; padding:0 !important; background:#fff !important; }
   header, .header, .sheet, .page, main, #app, .container {
     margin-top:0 !important; padding-top:0 !important; box-shadow:none !important; border:none !important;
   }
-  /* Logo fijo arriba-izquierda */
   body::before{
     content:"";
     position: fixed;
@@ -173,7 +174,6 @@ header, .header, .page-header { position: relative; }
     background: url('icons/logo-magnatest.png') no-repeat left top / contain;
     z-index: 9999;
   }
-  /* Evitar duplicado del logo en cabecera in-flow si existiera */
   header img[src*="logo" i], header img[alt*="magnatest" i], .header img { visibility: hidden !important; }
 }
 </style>
