@@ -149,29 +149,36 @@ header, .header, .page-header { position: relative; }
 
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
-<style id="mgt-fixes-v7">
+<style id="mgt-fixes-v8">
 :root{
-  --mgt-page-margin: 10mm;   /* margen imprimible */
+  --mgt-page-margin: 10mm;   /* margen PDF */
   --mgt-logo-size: 24mm;     /* altura del logo */
-  --mgt-logo-nudge-y: -20mm; /* SUBIR 20mm respecto al margen superior */
+  --mgt-logo-nudge-y: -14mm; /* ajuste vertical (negativo = subir) */
+  --mgt-content-top-pad: 0mm;/* si ves superposición, aumenta un poco (p.ej., 2mm) */
 }
 @media print {
   @page { size:A4; margin: var(--mgt-page-margin); }
+  /* Fijar el MISMO logo del header */
+  .logo-wrap, .brand{
+    position: fixed !important;
+    top: calc(var(--mgt-page-margin) + var(--mgt-logo-nudge-y)) !important;
+    left: var(--mgt-page-margin) !important;
+    z-index: 9999 !important;
+  }
+  .logo-wrap img, .brand img{
+    height: var(--mgt-logo-size) !important;
+    width: auto !important;
+    display: block !important;
+  }
+  /* Limpieza */
   html, body { margin:0 !important; padding:0 !important; background:#fff !important; }
   header, .header, .sheet, .page, main, #app, .container {
-    margin-top:0 !important; padding-top:0 !important; box-shadow:none !important; border:none !important;
+    box-shadow:none !important; border:none !important;
+    padding-top: var(--mgt-content-top-pad) !important;
+    margin-top: 0 !important;
   }
-  body::before{
-    content:"";
-    position: fixed;
-    top: calc(var(--mgt-page-margin) + var(--mgt-logo-nudge-y));
-    left: var(--mgt-page-margin);
-    width: auto;
-    height: var(--mgt-logo-size);
-    background: url('icons/logo-magnatest.png') no-repeat left top / contain;
-    z-index: 9999;
-  }
-  header img[src*="logo" i], header img[alt*="magnatest" i], .header img { visibility: hidden !important; }
+  /* Asegurar que no exista un logo extra por estilos previos */
+  body::before{ content:none !important; }
 }
 </style>
 
@@ -456,13 +463,5 @@ header, .header, .page-header { position: relative; }
 })();
 </script>
 
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('sw.js').catch(function(err){ console.warn('SW fail', err); });
-  });
-}
-</script>
 </body>
 </html>
