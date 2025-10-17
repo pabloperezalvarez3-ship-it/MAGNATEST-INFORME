@@ -152,8 +152,8 @@ header, .header, .page-header { position: relative; }
 <style id="mgt-fixes-v8">
 :root{
   --mgt-page-margin: 10mm;   /* margen PDF */
-  --mgt-logo-size: 16mm;     /* altura del logo */
-  --mgt-logo-nudge-y: -14mm; /* ajuste vertical (negativo = subir) */
+  --mgt-logo-size: 15mm;     /* altura del logo */
+  --mgt-logo-nudge-y: -13mm; /* ajuste vertical (negativo = subir) */
   --mgt-logo-nudge-x: 2mm;   /* NUEVO: horizontal; negativo = más a la izquierda */
   --mgt-content-top-pad: 0mm;/* si ves superposición, aumenta un poco (p.ej., 2mm) */
 }
@@ -162,8 +162,8 @@ header, .header, .page-header { position: relative; }
   /* Fijar el MISMO logo del header */
   .logo-wrap, .brand{
     position: fixed !important;
-    top: calc(var(--mgt-page-margin) + var(--mgt-logo-nudge-y)) !important;
-    left: var(--mgt-page-margin) !important;
+    top:  calc(var(--mgt-page-margin) + var(--mgt-logo-nudge-y)) !important;
+    left: calc(var(--mgt-page-margin) + var(--mgt-logo-nudge-x)) !important; /* <-- aquí */
     z-index: 9999 !important;
   }
   .logo-wrap img, .brand img{
