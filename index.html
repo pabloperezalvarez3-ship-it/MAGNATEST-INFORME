@@ -149,14 +149,11 @@ header, .header, .page-header { position: relative; }
 
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
-
-
-
-<style id="mgt-fixes-v6">
+<style id="mgt-fixes-v7">
 :root{
   --mgt-page-margin: 10mm;   /* margen imprimible */
-  --mgt-logo-size: 24mm;     /* altura del logo (ligeramente mayor) */
-  --mgt-logo-nudge-y: -12mm; /* subir 12mm para igualar la segunda imagen */
+  --mgt-logo-size: 24mm;     /* altura del logo */
+  --mgt-logo-nudge-y: -20mm; /* SUBIR 20mm respecto al margen superior */
 }
 @media print {
   @page { size:A4; margin: var(--mgt-page-margin); }
