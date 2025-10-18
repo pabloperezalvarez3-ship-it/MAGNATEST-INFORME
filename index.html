@@ -160,6 +160,7 @@ header, .header, .page-header { position: relative; }
 }
 @media print {
   @page { size:A4; margin: var(--mgt-page-margin); }
+  header h1 + p { display: none !important; }
   /* Fijar el MISMO logo del header */
   .logo-wrap, .brand{
     position: absolute !important;
