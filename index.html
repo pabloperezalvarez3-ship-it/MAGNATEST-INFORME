@@ -159,8 +159,9 @@ header, .header, .page-header { position: relative; }
   --mgt-content-top-pad: 7mm;   /* o 3–4mm si lo quieres más abajo */
 }
 @media print {
+    header .subtitle { display: none !important; }
+}
   @page { size:A4; margin: var(--mgt-page-margin); }
-  header h1 + p { display: none !important; }
   /* Fijar el MISMO logo del header */
   .logo-wrap, .brand{
     position: absolute !important;
