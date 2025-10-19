@@ -187,13 +187,25 @@ header, .header, .page-header { position: relative; }
 </style>
 
 
-<style id="mgt-custom">
-:root{ --mgt-accent: #2B63A2; }
-@media screen, print {
-  header .h-title{ color: var(--mgt-accent) !important; }
-  header .h-sub{ display:none !important; }
-}
-</style>
+  <!-- PWA / iOS meta -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="MAGNATEST">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#244A9C">
+  <style id="mgt-app-theme">
+  :root{
+    --mgt-app-bg: #244A9C;
+    --mgt-page-bg: #ffffff;
+  }
+  @media screen, (display-mode: standalone){
+    body{ background: var(--mgt-app-bg); }
+    .sheet, .page, .content, .container{ background: var(--mgt-page-bg) !important; }
+  }
+  @media print{
+    body{ background: #fff !important; }
+  }
+  </style>
 
 </head>
 <body>
