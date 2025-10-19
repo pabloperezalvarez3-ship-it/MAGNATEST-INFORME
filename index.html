@@ -186,6 +186,15 @@ header, .header, .page-header { position: relative; }
 }
 </style>
 
+
+<style id="mgt-custom">
+:root{ --mgt-accent: #2B63A2; }
+@media screen, print {
+  header .h-title{ color: var(--mgt-accent) !important; }
+  header .h-sub{ display:none !important; }
+}
+</style>
+
 </head>
 <body>
   <div class="toolbar">
